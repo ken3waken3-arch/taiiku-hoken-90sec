@@ -1,0 +1,18 @@
+const slides=[
+ {kicker:'まず、めざす姿',title:'「運動が得意な子」だけの体育から',copy:'全ての子どもが、運動やスポーツの多様な楽しさに出会い、その経験を生涯にわたる豊かなスポーツライフへつなげます。',tag:'審議まとめの方向性',alt:'学校の体育館で子どもたちがボールを使った運動遊びをする様子',voice:'次期学習指導要領に向けた審議まとめが体育・保健体育で目指すのは、全ての子どもが運動やスポーツの多様な楽しみ方を知り、健康課題にも主体的に向き合えることです。'},
+ {kicker:'変化 1 · 楽しみ方',title:'スポーツの楽しみ方は、するだけじゃない',copy:'する・見る・支える・知る・集う・つながる。自分に合った入口から、スポーツに関わります。',tag:'審議まとめの方向性',alt:'体育館で子どもたちが声を掛け合い、ボールゲームに取り組む様子',voice:'楽しみ方は、運動をすることだけに限りません。見る、支える、知る、集う、つながる。自分に合う入口からスポーツの楽しさや価値に出会う考え方が示されています。'},
+ {kicker:'変化 2 · 学びの系統性',title:'発達段階に合わせて、学びをつなぐ',copy:'小4までは動きの基礎。中2までは多様な領域を経験。中3以降は、卒業後も運動に関わる姿を見通します。',tag:'審議まとめの方向性',alt:'体育館に運動遊びのコースや活動場所を設けた授業の様子',voice:'体育の学びは段階的に整理されます。小4までは動きの基礎、中2までは多くの領域を経験し、中3以降は卒業後も運動やスポーツに豊かに関わることを意識します。'},
+ {kicker:'変化 3 · 小学校低学年の体育',title:'「運動の数」から「育てる動き」へ',copy:'小4までは、運動の種類を網羅するのでなく、どのような動きを身に付けるかを軸に整理する方向です。',tag:'審議まとめの方向性',alt:'学校の体育館で子どもが平均台の上でバランスを取る運動をしている様子',voice:'小4までの体育では、運動の種類を網羅するより、どのような動きを育てるかを軸に示す方向です。技能差にかかわらず参加できる環境づくりも重視されています。'},
+ {kicker:'変化 4 · 体育と保健',title:'体験と知識を、生活の判断につなぐ',copy:'体育と保健を関連付け、体験と知識を行き来する。健康や安全について、日々の判断に生かします。',tag:'審議まとめの方向性',alt:'学校の教室で保健の学習を行う教師と子どもたち',voice:'体育と保健を関連付け、体験と知識を往還させることも方向性の一つです。保健で学ぶ概念や原則を、健康や安全についての生活上の判断につなげます。'},
+ {kicker:'授業で試すなら',title:'参加の仕方を選べる授業に',copy:'プレーする、作戦を考える、記録する。最後に「どんな関わり方が楽しかった？」を振り返ります。',tag:'ここからは授業づくりの提案',alt:'体育館で円になって授業を振り返る子どもたちと教師',voice:'授業で試す提案です。ゲームで、プレーする、作戦を伝える、記録するなどの役割を用意し、参加の仕方を選べるようにする。最後に、どんな関わり方が楽しかったかを振り返ってみましょう。'}
+];
+const $=id=>document.getElementById(id);let index=0,playing=false,elapsed=0,timer=null;const duration=15000;
+function paint(){const s=slides[index];$('slide-count').textContent=`${String(index+1).padStart(2,'0')} / 06`;$('slide-image').src=`assets/video-school-slide-${String(index+1).padStart(2,'0')}.png`;$('slide-image').alt=s.alt;$('slide-kicker').textContent=s.kicker;$('slide-title').textContent=s.title;$('slide-copy').textContent=s.copy;$('slide-tag').textContent=s.tag;$('slide-time').textContent=`0:${String(Math.ceil((duration-elapsed)/1000)).padStart(2,'0')}`;$('progress').style.width=`${elapsed/duration*100}%`;}
+function stop(){playing=false;clearInterval(timer);timer=null;$('play').textContent='▶ 再生';}
+function advance(){if(index<slides.length-1){index++;elapsed=0;paint();}else{elapsed=duration;paint();stop();}}
+function tick(){elapsed+=100;if(elapsed>=duration){advance();if(!playing)return;}paint();}
+function start(){if(index===slides.length-1&&elapsed>=duration){index=0;elapsed=0;}playing=true;$('play').textContent='❚❚ 一時停止';clearInterval(timer);timer=setInterval(tick,100);}
+function setSlide(i){index=(i+slides.length)%slides.length;elapsed=0;paint();if(playing){clearInterval(timer);timer=setInterval(tick,100);}}
+$('play').addEventListener('click',()=>playing?stop():start());$('next').addEventListener('click',()=>setSlide(index+1));$('prev').addEventListener('click',()=>setSlide(index-1));$('restart').addEventListener('click',()=>{stop();index=0;elapsed=0;paint();});
+const list=$('transcript-list');slides.forEach((s,i)=>{const li=document.createElement('li');const b=document.createElement('strong');b.textContent=`${i*15}–${(i+1)*15}秒　${s.title} `;li.append(b,document.createTextNode(s.voice));list.append(li);});paint();
+const search=$('search');search.addEventListener('input',()=>{const q=search.value.trim().toLocaleLowerCase();let found=0;document.querySelectorAll('.searchable').forEach(el=>{const hay=(el.innerText+' '+(el.dataset.search||'')).toLocaleLowerCase();const match=!q||hay.includes(q);el.classList.toggle('hidden-result',!match);if(match)found++;});$('search-status').textContent=q?`${found}件`:'';});
